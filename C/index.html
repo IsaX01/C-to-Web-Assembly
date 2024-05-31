@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ordenamiento y Búsqueda con Web Assembly</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Ordenamiento y Búsqueda con Web Assembly</h1>
+
+  <div class="container">
+    <div class="input-group">
+      <label for="arregloInput">Arreglo de números (separados por comas):</label>
+      <input type="text" id="arregloInput" placeholder="Ej: 10, 25, 3, 7, 12">
+    </div>
+
+    <div class="radio-group">
+      <h2>Algoritmo de búsqueda:</h2>
+      <div>
+        <input type="radio" id="busquedaSecuencialRadio" name="algoritmoBusqueda" value="busquedaSecuencial">
+        <label for="busquedaSecuencialRadio">Búsqueda Secuencial</label>
+      </div>
+      <div>
+        <input type="radio" id="busquedaBinariaRadio" name="algoritmoBusqueda" value="busquedaBinaria">
+        <label for="busquedaBinariaRadio">Búsqueda Binaria</label>
+      </div>
+    </div>
+
+    <div class="radio-group">
+      <h2>Algoritmo de ordenamiento:</h2>
+      <div>
+        <input type="radio" id="ordenamientoBurbujaRadio" name="algoritmoOrdenamiento" value="ordenamientoBurbuja">
+        <label for="ordenamientoBurbujaRadio">Ordenamiento de la Burbuja</label>
+      </div>
+      <div>
+        <input type="radio" id="quickSortRadio" name="algoritmoOrdenamiento" value="quickSort">
+        <label for="quickSortRadio">Quick Sort</label>
+      </div>
+      <div>
+        <input type="radio" id="ordenamientoInsercionRadio" name="algoritmoOrdenamiento" value="ordenamientoInsercion">
+        <label for="ordenamientoInsercionRadio">Ordenamiento por Inserción</label>
+      </div>
+    </div>
+
+    <button id="ejecutarButton">Ejecutar</button>
+
+    <div id="resultadosContainer">
+      <h2>Resultados:</h2>
+      <p id="tiempoEjecucion">Tiempo de ejecución: -</p>
+      <p id="elementoEncontrado">Elemento encontrado: -</p>
+      <p id="arregloOrdenado">Arreglo ordenado: -</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
