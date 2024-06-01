@@ -1,11 +1,5 @@
 // // Obtener referencias a los elementos del HTML
-// const arregloInput = document.getElementById('arregloInput');
-// const radioBusqueda = document.getElementsByName('algoritmoBusqueda');
-// const radioOrdenamiento = document.getElementsByName('algoritmoOrdenamiento');
-// const ejecutarButton = document.getElementById('ejecutarButton');
-// const tiempoEjecucion = document.getElementById('tiempoEjecucion');
-// const elementoEncontrado = document.getElementById('elementoEncontrado');
-// const arregloOrdenado = document.getElementById('arregloOrdenado');
+
 
 // // Declarar variables para almacenar el módulo WASM y las funciones de búsqueda y ordenamiento
 // let wasmModule;
@@ -32,18 +26,25 @@
 //   });
 
 
-// Obtener referencias a los elementos del HTML
-const arregloInput = document.getElementById('arregloInput');
-// ... (otros elementos)
+ const arregloInput = document.getElementById('arregloInput');
+ const inputBusqueda = document.getElementById('inputBusqueda');
+ const radioBusqueda = document.getElementsByName('algoritmoBusqueda');
+ const radioOrdenamiento = document.getElementsByName('algoritmoOrdenamiento');
+ const ejecutarButton = document.getElementById('ejecutarButton');
 
-// Declarar variables para almacenar las funciones de búsqueda y ordenamiento
+
+ const tiempoEjecucion = document.getElementById('tiempoEjecucion');
+ const elementoEncontrado = document.getElementById('elementoEncontrado');
+ const arregloOrdenado = document.getElementById('arregloOrdenado');
+
+
 let busquedaSecuencial;
 let busquedaBinaria;
 let ordenamientoBurbuja;
 let quicksort;
 let ordenamientoInsercion;
 
-// Función para cargar un archivo WASM
+
 function cargarWASM(nombreArchivo, funcion) {
   fetch(nombreArchivo)
     .then(response => response.arrayBuffer())
@@ -73,7 +74,6 @@ function cargarWASM(nombreArchivo, funcion) {
     });
 }
 
-// Manejador de clic en el botón "Ejecutar"
 ejecutarButton.addEventListener('click', () => {
   const algoritmoBusqueda = obtenerAlgoritmoSeleccionado('algoritmoBusqueda');
   const algoritmoOrdenamiento = obtenerAlgoritmoSeleccionado('algoritmoOrdenamiento');
@@ -84,8 +84,41 @@ ejecutarButton.addEventListener('click', () => {
   cargarWASM('ordenamientoQuickSort.wasm', algoritmoOrdenamiento);
   cargarWASM('ordenamientoInsercion.wasm', algoritmoOrdenamiento);
 
-  // Ejecuta las funciones según las selecciones del usuario
-  // ...
+  const arreglo = obtenerArreglo();
+  const elementoABuscar = obtenerElementoABuscar();
+
+  let tiempoInicio;
+  let tiempoFin;
+
+  // Búsqueda
+  if (algoritmoBusqueda === 'busquedaSecuencial') {
+    tiempoInicio = performance.now();
+    const indiceEncontrado = busquedaSecuencial(arreglo, elementoABuscar);
+    tiempoFin = performance.now();
+  } else if (algoritmoBusqueda === 'busquedaBinaria') {
+    tiempoInicio = performance.now();
+    const indiceEncontrado = busquedaBinaria(arreglo, elementoABuscar);
+    tiempoFin = performance.now();
+  }
+
+  // Ordenamiento
+  if (algoritmoOrdenamiento === 'ordenamientoBurbuja') {
+    tiempoInicio = performance.now();
+    ordenamientoBurbuja(arreglo);
+    tiempoFin = performance.now();
+  } else if (algoritmoOrdenamiento === 'ordenamientoQuickSort') {
+    tiempoInicio = performance.now();
+    quicksort(arreglo);
+    tiempoFin = performance.now();
+  } else if (algoritmoOrdenamiento === 'ordenamientoInsercion') {
+    tiempoInicio = performance.now();
+    ordenamientoInsercion(arreglo);
+    tiempoFin = performance.now();
+  }
+
+  mostrarTiempoEjecucion(tiempoFin - tiempoInicio);
+  mostrarElementoEncontrado(indiceEncontrado);
+  mostrarArregloOrdenado(arreglo);
 });
 
 // Función para obtener el algoritmo seleccionado (búsqueda u ordenamiento)
@@ -99,3 +132,31 @@ function obtenerAlgoritmoSeleccionado(nombreRadioGroup) {
   return null;
 }
 
+function mostrarArregloOrdenado(arregloOrdenado) {
+  const arregloOrdenadoElement = document.getElementById('arregloOrdenado');
+  arregloOrdenadoElement.textContent = `Arreglo ordenado: ${arregloOrdenado.join(', ')}`;
+}
+
+function mostrarElementoEncontrado(elementoEncontrado) {
+  const elementoEncontradoElement = document.getElementById('elementoEncontrado');
+  if (elementoEncontrado !== -1) {
+    elementoEncontradoElement.textContent = `Elemento encontrado: ${elementoEncontrado}`;
+  } else {
+    elementoEncontradoElement.textContent = `Elemento no encontrado`;
+  }
+}
+
+function mostrarTiempoEjecucion(tiempoEjecucion) {
+  const tiempoEjecucionElement = document.getElementById('tiempoEjecucion');
+  tiempoEjecucionElement.textContent = `Tiempo de ejecución: ${tiempoEjecucion} ms`;
+}
+
+function obtenerArreglo() {
+  const arregloInput = document.getElementById('arregloInput').value;
+  return arregloInput.split(',').map(Number);
+}
+
+function obtenerElementoABuscar() {
+  const inputBusqueda = document.getElementById('inputBusqueda').value;
+  return Number(inputBusqueda);
+}
