@@ -1,12 +1,12 @@
-const arregloInput = document.getElementById('arregloInput');
-const inputBusqueda = document.getElementById('inputBusqueda');
-const radioBusqueda = document.getElementsByName('algoritmoBusqueda');
-const radioOrdenamiento = document.getElementsByName('algoritmoOrdenamiento');
-const ejecutarButton = document.getElementById('ejecutarButton');
+const arregloInput = document.getElementById("arregloInput");
+const inputBusqueda = document.getElementById("inputBusqueda");
+const radioBusqueda = document.getElementsByName("algoritmoBusqueda");
+const radioOrdenamiento = document.getElementsByName("algoritmoOrdenamiento");
+const ejecutarButton = document.getElementById("ejecutarButton");
 
-const tiempoEjecucion = document.getElementById('tiempoEjecucion');
-const elementoEncontrado = document.getElementById('elementoEncontrado');
-const arregloOrdenado = document.getElementById('arregloOrdenado');
+const tiempoEjecucion = document.getElementById("tiempoEjecucion");
+const elementoEncontrado = document.getElementById("elementoEncontrado");
+const arregloOrdenado = document.getElementById("arregloOrdenado");
 
 var busquedaSecuencial;
 var busquedaBinaria;
@@ -16,198 +16,237 @@ var ordenamientoInsercion;
 var Add;
 var Arreglo;
 var anotherSecuencial;
+var createBuffer;
+var destroyBuffer;
 
 let wasmMemory = new WebAssembly.Memory({ initial: 10, maximum: 65536 });
 
-let wasmTable = new WebAssembly.Table({
-    'initial': 1,
-    'maximum': 10,
-    'element': 'anyfunc'
-});
-
 let asmLibraryArg = {
-    "__handle_stack_overflow": () => { },
-    "emscripten_resize_heap": () => { },
-    "__lock": () => { },
-    "__unlock": () => { },
-    "memory": wasmMemory,
-    "table": wasmTable
+  __handle_stack_overflow: () => {},
+  emscripten_resize_heap: () => {},
+  __lock: () => {},
+  __unlock: () => {},
+  memory: wasmMemory,
 };
 
 var info = {
-    'env': asmLibraryArg,
-    'wasi_snapshot_preview1': asmLibraryArg
+  env: asmLibraryArg,
+  wasi_snapshot_preview1: asmLibraryArg,
 };
 
 var wasmModule;
 
 async function cargarWASM(nombreArchivo, funcion) {
-    try {
-        console.log(`Cargando módulo WASM: ${nombreArchivo}`);
-        const response = await fetch(nombreArchivo);
-        console.log("fetch", response)
-        const buffer = await response.arrayBuffer();
-        const module = await WebAssembly.instantiate(buffer, info);
-        wasmModule = module.instance.exports;
-        console.log(`Módulo WASM cargado: ${nombreArchivo}`);
-        console.log(`Función exportada: ${funcion}`);
-        console.log("moduels", module)
-        console.log("instancia", module.instance)
-        console.log("moduelswasm", wasmModule)
-        switch (funcion) {
-            case 'busquedaSecuencial':
-                busquedaSecuencial = wasmModule.c;
-                console.log(busquedaSecuencial)
-                break;
-            case 'busquedaBinaria':
-                busquedaBinaria = wasmModule.c;
-                console.log(busquedaBinaria)
-                break;
-            case 'ordenamientoBurbuja':
-                ordenamientoBurbuja = wasmModule.c;
-                console.log(ordenamientoBurbuja)
-                break;
-            case 'ordenamientoQuickSort':
-                quicksort = wasmModule.c;
-                console.log(quicksort)
-                break;
-            case 'ordenamientoInsercion':
-                ordenamientoInsercion = wasmModule.c;
-                console.log(ordenamientoInsercion)
-                break;
-            case 'Add':
-                Add = wasmModule.c;
-                console.log(Add)
-                break;
-            case 'Arreglo':
-                Arreglo = wasmModule.c;
-                console.log(Arreglo)
-                break;
-            default:
-                console.error(`Función desconocida: ${funcion}`);
-        }
-    } catch (error) {
-        console.error(`Error al cargar ${nombreArchivo}:`, error);
+  try {
+    console.log(`Cargando módulo WASM: ${nombreArchivo}`);
+    const response = await fetch(nombreArchivo);
+    console.log("fetch", response);
+    const buffer = await response.arrayBuffer();
+    const module = await WebAssembly.instantiate(buffer, info);
+    wasmModule = module.instance.exports;
+    console.log(`Módulo WASM cargado: ${nombreArchivo}`);
+    console.log(`Función exportada: ${funcion}`);
+    console.log("moduels", module);
+    console.log("instancia", module.instance);
+    console.log("moduelswasm", wasmModule);
+    switch (funcion) {
+      case "busquedaSecuencial":
+        busquedaSecuencial = wasmModule.busquedaSecuencial;
+        console.log(busquedaSecuencial);
+        break;
+      case "busquedaBinaria":
+        busquedaBinaria = wasmModule.busquedaBinaria;
+        console.log(busquedaBinaria);
+        break;
+      case "ordenamientoBurbuja":
+        ordenamientoBurbuja = wasmModule.ordenamientoBurbuja;
+        console.log(ordenamientoBurbuja);
+        break;
+      case "ordenamientoQuickSort":
+        quicksort = wasmModule.quicksort;
+        console.log(quicksort);
+        break;
+      case "ordenamientoInsercion":
+        ordenamientoInsercion = wasmModule.ordenamientoInsercion;
+        console.log(ordenamientoInsercion);
+        break;
+      case "Add":
+        Add = wasmModule.Add;
+        console.log(Add);
+        break;
+      case "Arreglo":
+        Arreglo = wasmModule.Arreglo;
+        console.log(Arreglo);
+        break;
+      case "createBuffer":
+        createBuffer = wasmModule.create_buffer;
+        break;
+      case "destroyBuffer":
+        destroyBuffer = wasmModule.destroy_buffer;
+        break;
+      default:
+        console.error(`Función desconocida: ${funcion}`);
     }
+  } catch (error) {
+    console.error(`Error al cargar ${nombreArchivo}:`, error);
+  }
 }
 
 async function cargarTodasLasFuncionesWASM() {
-    await Promise.all([
-        cargarWASM('busquedaSecuencial.wasm', 'busquedaSecuencial'),
-        cargarWASM('busquedaBinaria.wasm', 'busquedaBinaria'),
-        cargarWASM('ordenamientoBurbuja.wasm', 'ordenamientoBurbuja'),
-        cargarWASM('ordenamientoQuickSort.wasm', 'ordenamientoQuickSort'),
-        cargarWASM('ordenamientoInsercion.wasm', 'ordenamientoInsercion'),
-        cargarWASM('Add.wasm', 'Add'),
-        cargarWASM('Arreglo.wasm', 'Arreglo')
-    ]);
+  await Promise.all([
+    cargarWASM("busquedaSecuencial.wasm", "busquedaSecuencial"),
+    cargarWASM("busquedaBinaria.wasm", "busquedaBinaria"),
+    cargarWASM("ordenamientoBurbuja.wasm", "ordenamientoBurbuja"),
+    cargarWASM("ordenamientoQuickSort.wasm", "ordenamientoQuickSort"),
+    cargarWASM("ordenamientoInsercion.wasm", "ordenamientoInsercion"),
+    cargarWASM("Add.wasm", "Add"),
+    cargarWASM("Arreglo.wasm", "Arreglo"),
+    cargarWASM('create_buffer.wasm', 'createBuffer'),
+    cargarWASM('destroy_buffer.wasm', 'destroyBuffer')
+  ]);
 }
 
+ejecutarButton.addEventListener("click", async () => {
+  limpiarResultados();
 
-ejecutarButton.addEventListener('click', async () => {
-    limpiarResultados();
+  const algoritmoBusqueda = obtenerAlgoritmoSeleccionado("algoritmoBusqueda");
+  const algoritmoOrdenamiento = obtenerAlgoritmoSeleccionado(
+    "algoritmoOrdenamiento"
+  );
 
-    const algoritmoBusqueda = obtenerAlgoritmoSeleccionado('algoritmoBusqueda');
-    const algoritmoOrdenamiento = obtenerAlgoritmoSeleccionado('algoritmoOrdenamiento');
+  await cargarTodasLasFuncionesWASM();
 
-    await cargarTodasLasFuncionesWASM();
+  const arreglo = obtenerArreglo();
+  const elementoABuscar = obtenerElementoABuscar();
+  const numStrings = arreglo.length;
+  const maxLength = Math.max(...arreglo.map(str => str.length)) + 1; // +1 for null terminator
 
-    const arreglo = obtenerArreglo();
-    const elementoABuscar = obtenerElementoABuscar();
+  // Create buffer for array of strings
+  const bufferPointer = createBuffer(numStrings, maxLength);
 
-    const arregloLength = arreglo.length;
-    const arregloMemorySize = arregloLength * 4; // Assuming each element is 4 bytes (integer)
-    const arregloMemoryOffset = wasmMemory.grow(Math.ceil(arregloMemorySize / 65536));
-    const arregloPointer = arregloMemoryOffset * 65536;
-  
-    // Copy the array data to WebAssembly memory
-    const arregloView = new Uint32Array(wasmMemory.buffer, arregloPointer, arregloLength);
-    arregloView.set(arreglo);
+  // Copy strings to the buffer
+  const HEAPU8 = new Uint8Array(wasmMemory.buffer);
+  const HEAP32 = new Uint32Array(wasmMemory.buffer);
+  for (let i = 0; i < numStrings; i++) {
+      const stringPointer = HEAP32[(bufferPointer / 4) + i];
+      for (let j = 0; j < arreglo[i].length; j++) {
+          HEAPU8[stringPointer + j] = arreglo[i].charCodeAt(j);
+      }
+      HEAPU8[stringPointer + arreglo[i].length] = 0; // Null terminator
+  }
 
-    let tiempoInicio;
-    let tiempoFin;
-    let indiceEncontrado = -1;
+  let tiempoInicio;
+  let tiempoFin;
+  let indiceEncontrado = -1;
 
-    console.log(algoritmoBusqueda, algoritmoOrdenamiento);
-    console.log(ordenamientoBurbuja, busquedaSecuencial);
-    console.log(Add(10, 8))
-    console.log(Arreglo(arregloView))
-    console.log("memory", wasmMemory.buffer)
-    // Búsqueda
-    tiempoInicio = performance.now();
-    if (algoritmoBusqueda === 'busquedaSecuencial' && busquedaSecuencial) {
-        console.log("secuencial", arreglo);
-        indiceEncontrado = busquedaSecuencial(arregloView, elementoABuscar, arreglo.length);
-        console.log("indice", indiceEncontrado)
-    } else if (algoritmoBusqueda === 'busquedaBinaria' && busquedaBinaria) {
-        indiceEncontrado = busquedaBinaria(arreglo, elementoABuscar, 0, arreglo.length - 1);
+  console.log(algoritmoBusqueda, algoritmoOrdenamiento);
+  console.log(ordenamientoBurbuja, busquedaSecuencial);
+  console.log(Add(10, 8));
+  console.log(Arreglo(bufferPointer));
+  console.log("memory", wasmMemory.buffer);
+  // Búsqueda
+  tiempoInicio = performance.now();
+  if (algoritmoBusqueda === "busquedaSecuencial" && busquedaSecuencial) {
+    indiceEncontrado = busquedaSecuencial(
+      bufferPointer,
+      elementoABuscar,
+      numStrings
+    );
+    console.log("indice", indiceEncontrado);
+  } else if (algoritmoBusqueda === "busquedaBinaria" && busquedaBinaria) {
+    indiceEncontrado = busquedaBinaria(
+      bufferPointer,
+      elementoABuscar,
+      0,
+      numStrings - 1
+    );
+  }
+  tiempoFin = performance.now();
+  mostrarTiempoEjecucion(tiempoFin - tiempoInicio, "Búsqueda");
+
+  mostrarElementoEncontrado(indiceEncontrado);
+
+  // Ordenamiento
+  tiempoInicio = performance.now();
+  if (algoritmoOrdenamiento === "ordenamientoBurbuja" && ordenamientoBurbuja) {
+    console.log("burbuja");
+    ordenamientoBurbuja(bufferPointer, numStrings);
+  } else if (algoritmoOrdenamiento === "ordenamientoQuickSort" && quicksort) {
+    quicksort(bufferPointer, 0, numStrings - 1);
+  } else if (
+    algoritmoOrdenamiento === "ordenamientoInsercion" &&
+    ordenamientoInsercion
+  ) {
+    ordenamientoInsercion(bufferPointer, numStrings);
+  }
+  tiempoFin = performance.now();
+  mostrarTiempoEjecucion(tiempoFin - tiempoInicio, "Ordenamiento");
+  const sortedArray = [];
+    for (let i = 0; i < numStrings; i++) {
+        const stringPointer = HEAP32[(bufferPointer / 4) + i];
+        let str = '';
+        for (let j = 0; j < maxLength; j++) {
+            const charCode = HEAPU8[stringPointer + j];
+            if (charCode === 0) break; // Null terminator
+            str += String.fromCharCode(charCode);
+        }
+        sortedArray.push(str);
     }
-    tiempoFin = performance.now();
-    mostrarTiempoEjecucion(tiempoFin - tiempoInicio, 'Búsqueda');
-
-    mostrarElementoEncontrado(indiceEncontrado);
-
-    // Ordenamiento
-    tiempoInicio = performance.now();
-    if (algoritmoOrdenamiento === 'ordenamientoBurbuja' && ordenamientoBurbuja) {
-        console.log("burbuja");
-        ordenamientoBurbuja(arregloView, arreglo.length);
-    } else if (algoritmoOrdenamiento === 'ordenamientoQuickSort' && quicksort) {
-        quicksort(arreglo, 0, arreglo.length - 1);
-    } else if (algoritmoOrdenamiento === 'ordenamientoInsercion' && ordenamientoInsercion) {
-        ordenamientoInsercion(arreglo, arreglo.length);
-    }
-    tiempoFin = performance.now();
-    mostrarTiempoEjecucion(tiempoFin - tiempoInicio, 'Ordenamiento');
-    const sortedArray = Array.from(arregloView);
     mostrarArregloOrdenado(sortedArray);
-    wasmMemory.grow(0);
+    console.log("sortedArray: " + sortedArray)
+    // Destroy the buffer
+    destroyBuffer(bufferPointer, numStrings);
 
 });
 
 function limpiarResultados() {
-    tiempoEjecucion.textContent = '';
-    elementoEncontrado.textContent = '';
-    arregloOrdenado.textContent = '';
+  tiempoEjecucion.textContent = "";
+  elementoEncontrado.textContent = "";
+  arregloOrdenado.textContent = "";
 }
 
 // Función para obtener el algoritmo seleccionado (búsqueda u ordenamiento)
 function obtenerAlgoritmoSeleccionado(nombreRadioGroup) {
-    const radios = document.getElementsByName(nombreRadioGroup);
-    for (const radio of radios) {
-        if (radio.checked) {
-            return radio.value;
-        }
+  const radios = document.getElementsByName(nombreRadioGroup);
+  for (const radio of radios) {
+    if (radio.checked) {
+      return radio.value;
     }
-    return null;
+  }
+  return null;
 }
 
 function mostrarArregloOrdenado(arregloOrdenado) {
-    const arregloOrdenadoElement = document.getElementById('arregloOrdenado');
-    const _arreglo = Array.from(arregloOrdenado)
-    arregloOrdenadoElement.textContent = `Arreglo ordenado: ${_arreglo.join(', ')}`;
+  const arregloOrdenadoElement = document.getElementById("arregloOrdenado");
+  const _arreglo = Array.from(arregloOrdenado);
+  arregloOrdenadoElement.textContent = `Arreglo ordenado: ${_arreglo.join(
+    ", "
+  )}`;
 }
 
 function mostrarElementoEncontrado(elementoEncontrado) {
-    const elementoEncontradoElement = document.getElementById('elementoEncontrado');
-    if (elementoEncontrado !== -1) {
-        elementoEncontradoElement.textContent = `Elemento encontrado en índice: ${elementoEncontrado}`;
-    } else {
-        elementoEncontradoElement.textContent = `Elemento no encontrado`;
-    }
+  const elementoEncontradoElement =
+    document.getElementById("elementoEncontrado");
+  if (elementoEncontrado !== -1) {
+    elementoEncontradoElement.textContent = `Elemento encontrado en índice: ${elementoEncontrado}`;
+  } else {
+    elementoEncontradoElement.textContent = `Elemento no encontrado`;
+  }
 }
 
 function mostrarTiempoEjecucion(tiempoEjecucion, tipo) {
-    const tiempoEjecucionElement = document.getElementById('tiempoEjecucion');
-    tiempoEjecucionElement.textContent += `${tipo} - Tiempo de ejecución: ${tiempoEjecucion.toFixed(2)} ms\n`;
+  const tiempoEjecucionElement = document.getElementById("tiempoEjecucion");
+  tiempoEjecucionElement.textContent += `${tipo} - Tiempo de ejecución: ${tiempoEjecucion.toFixed(
+    2
+  )} ms\n`;
 }
 
 function obtenerArreglo() {
-    const arregloInput = document.getElementById('arregloInput').value;
-    return arregloInput.split(',').map(Number);
+  const arregloInput = document.getElementById("arregloInput").value;
+  return arregloInput.split(",").map(Number);
 }
 
 function obtenerElementoABuscar() {
-    const inputBusqueda = document.getElementById('inputBusqueda').value;
-    return Number(inputBusqueda);
+  const inputBusqueda = document.getElementById("inputBusqueda").value;
+  return Number(inputBusqueda);
 }

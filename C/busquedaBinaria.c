@@ -15,4 +15,7 @@ int busquedaBinaria(int* arreglo, int elemento, int inicio, int fin) {
   }
 }
 
+
+
+
 //  Divide el arreglo en dos mitades repetidamente hasta encontrar el elemento buscado o determinar que no está presente.
