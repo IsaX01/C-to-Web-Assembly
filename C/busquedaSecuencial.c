@@ -1,5 +1,8 @@
+#include <emscripten.h>
+#include <stdio.h>
 
-int busquedaSecuencial(int arreglo[], int elemento, int longitud) {
+EMSCRIPTEN_KEEPALIVE
+int busquedaSecuencial(int32_t *arreglo, int elemento, int longitud) {
   int indice = 0;
   while (indice < longitud && arreglo[indice] != elemento) {
     indice++;

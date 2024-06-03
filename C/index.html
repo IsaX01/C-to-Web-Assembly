@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Ordenamiento y Búsqueda con Web Assembly</title>
-<!--  <link rel="stylesheet" href=" styles. css">-->
+  <!--  <link rel="stylesheet" href=" styles. css">-->
+
+
 </head>
+
 <body>
   <h1>Ordenamiento y Búsqueda con Web Assembly</h1>
 
   <div class="container">
     <div class="input-group">
       <label for="arregloInput">Arreglo de números (separados por comas):</label>
-      <input type="text" id="arregloInput" placeholder="Ej: 10, 25, 3, 7, 12">
+      <input type="text" id="arregloInput"
+        value="348,145,932,671,230,702,896,507,113,546,983,47,621,395,917,428,593,836,314,968,459,783,206,652,879,360,563,734,100,941,275,850,433,608,329,974,518,749,221,866,492,645,355,990,531,766,193,883,464,617,382,957,554,727,164,842,416,581,301,926,485,630,341,989,524,753,187,876,452,605,376,947,543,718,151,833,409,574,297,912,477,624,337,971,512,743,178,857,440,591,363,998,537,772,215,891,467,620,391,954,551,721,161,838,413,577,10,304,923,482,627,344,986,521,750,184,873,446,596,369"
+        placeholder="Ej: 10, 25, 3, 7, 12">
     </div>
     <div class="input-group">
       <label for="inputBusqueda">Numero a buscar: </label>
-      <input type="text" id="inputBusqueda" placeholder="Ej: 10">
+      <input type="text" id="inputBusqueda" value="10" placeholder="Ej: 10">
     </div>
     <div class="radio-group">
       <h2>Algoritmo de búsqueda:</h2>
@@ -55,7 +62,13 @@
       <p id="arregloOrdenado">Arreglo ordenado: -</p>
     </div>
   </div>
+  <script type="module" src="script.js"></script>
+  <script type="module" src="busquedaBinaria.js"></script>
+  <script type="module" src="busquedaSecuencial.js"></script>
+  <script type="module" src="ordenamientoBurbuja.js"></script>
+  <script type="module" src="ordenamientoQuickSort.js"></script>
+  <script type="module" src="ordenamientoInsercion.js"></script>
 
-  <script src="script.js"></script>
 </body>
+
 </html>

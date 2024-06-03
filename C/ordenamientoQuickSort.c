@@ -1,4 +1,7 @@
-int particion(int arreglo[], int inicio, int fin) {
+#include <emscripten.h>
+#include <stdio.h>
+
+int particion(int* arreglo, int inicio, int fin) {
   int pivote = arreglo[fin];
   int i = (inicio - 1);
 
@@ -17,11 +20,12 @@ int particion(int arreglo[], int inicio, int fin) {
   return i + 1;
 }
 
-void quickSort(int arreglo[], int inicio, int fin) {
+EMSCRIPTEN_KEEPALIVE
+void quicksort(int* arreglo, int inicio, int fin) {
   if (inicio < fin) {
     int pivote = particion(arreglo, inicio, fin);
-    quickSort(arreglo, inicio, pivote - 1);
-    quickSort(arreglo, pivote + 1, fin);
+    quicksort(arreglo, inicio, pivote - 1);
+    quicksort(arreglo, pivote + 1, fin);
   }
 }
 

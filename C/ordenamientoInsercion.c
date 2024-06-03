@@ -1,4 +1,7 @@
-void ordenamientoInsercion(int arreglo[], int longitud) {
+#include <emscripten.h>
+
+EMSCRIPTEN_KEEPALIVE
+void ordenamientoInsercion(int* arreglo, int longitud) {
   for (int i = 1; i < longitud; i++) {
     int valorActual = arreglo[i];
     int j = i - 1;

@@ -1,4 +1,7 @@
-int busquedaBinaria(int arreglo[], int elemento, int inicio, int fin) {
+#include <emscripten.h>
+
+EMSCRIPTEN_KEEPALIVE
+int busquedaBinaria(int* arreglo, int elemento, int inicio, int fin) {
   if (inicio > fin) {
     return -1;
   }
